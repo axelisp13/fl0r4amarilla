@@ -2,24 +2,22 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Turtle Animado con p5.js</title>
+<title>Flor Animada con p5.js</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
 <body>
 <script>
 let phi = 137.508 * (Math.PI / 180);
-let i = 0;      // índice para la espiral
-let maxI = 200; // cantidad de puntos en la espiral
-let circleStep = 0;
-let j = 0;
-let drawingCircle = false;
+let petalI = 0, petalJ = 0;
+let maxPetalI = 16, maxPetalJ = 18;
+let spiralI = 0, maxSpiral = 200;
+let drawingSpiral = false;
 
 function setup() {
   createCanvas(800, 800);
   background(0);
   angleMode(RADIANS);
   frameRate(30);
-  strokeWeight(2);
 }
 
 // Función para simular hsv_to_rgb
@@ -28,42 +26,42 @@ function colorFromHSV(h, s, v) {
 }
 
 function draw() {
-  translate(width/2, height/2); // mover el origen al centro
+  translate(width/2, height/2 - 40);
   
-  // Dibujar círculos tipo turtle (una iteración por frame)
-  if (!drawingCircle) {
+  // Dibujar pétalos de flor
+  if (!drawingSpiral) {
     let c = colorFromHSV(0.125, 1, 1);
     stroke(c);
     noFill();
     
     push();
     rotate(HALF_PI);
-    arc(0, 0, 2*(150-j*6), 2*(150-j*6), 0, PI/2);
+    arc(0, 0, 2*(150-petalJ*6), 2*(150-petalJ*6), 0, PI/2);
     rotate(-HALF_PI);
-    arc(0, 0, 2*(150-j*6), 2*(150-j*6), 0, PI/2);
+    arc(0, 0, 2*(150-petalJ*6), 2*(150-petalJ*6), 0, PI/2);
     pop();
     
-    j++;
-    if (j >= 18) {
-      j = 0;
-      circleStep++;
-      if (circleStep >= 16) {
-        drawingCircle = true; // cuando terminamos todos los círculos, empezamos la espiral
+    petalJ++;
+    if (petalJ >= maxPetalJ) {
+      petalJ = 0;
+      petalI++;
+      if (petalI >= maxPetalI) {
+        drawingSpiral = true; // empieza la espiral después de la flor
       }
     }
     return;
   }
   
-  // Dibujar espiral tipo Phyllotaxis
-  if (i < maxI) {
-    fill(139,69,19); // brown
+  // Dibujar espiral tipo Phyllotaxis (simulando semillas)
+  if (spiralI < maxSpiral) {
+    fill(139,69,19); // color brown
     noStroke();
-    let r = 4 * Math.sqrt(i);
-    let theta = i * phi;
+    let r = 4 * Math.sqrt(spiralI);
+    let theta = spiralI * phi;
     let x = r * Math.cos(theta);
     let y = r * Math.sin(theta);
     ellipse(x, y, 8, 8);
-    i++;
+    spiralI++;
   }
 }
 </script>
