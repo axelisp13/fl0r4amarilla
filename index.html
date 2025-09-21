@@ -1,60 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Flor amarilla</title>
-  <!-- Cargar Brython -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.5/brython.min.js"></script>
-  <!-- Cargar Turtle para Brython -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython-turtle/brython-turtle.min.js"></script>
+<meta charset="UTF-8">
+<title>Turtle Animado con p5.js</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
-<body onload="brython()">
-  <canvas id="mycanvas" width="800" height="800"></canvas>
+<body>
+<script>
+let phi = 137.508 * (Math.PI / 180);
+let i = 0;      // índice para la espiral
+let maxI = 200; // cantidad de puntos en la espiral
+let circleStep = 0;
+let j = 0;
+let drawingCircle = false;
 
-  <script type="text/python">
-from browser import document
-from turtle import *
-import colorsys
-import math
+function setup() {
+  createCanvas(800, 800);
+  background(0);
+  angleMode(RADIANS);
+  frameRate(30);
+  strokeWeight(2);
+}
 
-# Usar el canvas de la página
-set_defaults(canvas=document["mycanvas"])
+// Función para simular hsv_to_rgb
+function colorFromHSV(h, s, v) {
+  return color(`hsb(${h*360}, ${s*100}%, ${v*100}%)`);
+}
 
-speed(0.25)
-bgcolor("black")
-
-goto(0, -40)
-h = 0
-
-for i in range(16):
-    for j in range(18):
-        c= colorsys.hsv_to_rgb(0.125 , 1, 1)
-        color(c)
-        rt(90)
-        circle(150-j*6, 90)
-        lt(90)
-        circle(150-j*6, 90)
-        rt(180)
-    circle(40, 24)
-
-color("black") 
-shape("turtle")
-fillcolor("brown")
-phi = 137.508 * (math.pi/ 180.0)
-
-for i in range (200):
-    r = 4 * math.sqrt(i)
-    theta = i*phi
-    x = r * math.cos(theta)
-    y = r * math.sin(theta)
-    penup()
-    goto(x, y)
-    setheading(i * 137.508)
-    pendown()
-    stamp()
-
-done()
-  </script>
+function draw() {
+  translate(width/2, height/2); // mover el origen al centro
+  
+  // Dibujar círculos tipo turtle (una iteración por frame)
+  if (!drawingCircle) {
+    let c = colorFromHSV(0.125, 1, 1);
+    stroke(c);
+    noFill();
+    
+    push();
+    rotate(HALF_PI);
+    arc(0, 0, 2*(150-j*6), 2*(150-j*6), 0, PI/2);
+    rotate(-HALF_PI);
+    arc(0, 0, 2*(150-j*6), 2*(150-j*6), 0, PI/2);
+    pop();
+    
+    j++;
+    if (j >= 18) {
+      j = 0;
+      circleStep++;
+      if (circleStep >= 16) {
+        drawingCircle = true; // cuando terminamos todos los círculos, empezamos la espiral
+      }
+    }
+    return;
+  }
+  
+  // Dibujar espiral tipo Phyllotaxis
+  if (i < maxI) {
+    fill(139,69,19); // brown
+    noStroke();
+    let r = 4 * Math.sqrt(i);
+    let theta = i * phi;
+    let x = r * Math.cos(theta);
+    let y = r * Math.sin(theta);
+    ellipse(x, y, 8, 8);
+    i++;
+  }
+}
+</script>
 </body>
 </html>
-
