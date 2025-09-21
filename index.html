@@ -2,92 +2,54 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Flor Amarilla</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    canvas {
-      background: black;
-    }
-  </style>
+  <title>Flor con Turtle en HTML</title>
+  <!-- Cargar Brython -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.5/brython.min.js"></script>
+  <!-- Cargar Turtle para Brython -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython-turtle/brython-turtle.min.js"></script>
 </head>
-<body>
-  <canvas id="canvas" width="800" height="800"></canvas>
-  <script>
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    ctx.translate(400, 400); // mover al centro
+<body onload="brython()">
+  <canvas id="mycanvas" width="800" height="800"></canvas>
 
-    // Conversión HSV → RGB
-    function hsvToRgb(h, s, v) {
-      let f = (n, k = (n + h * 6) % 6) =>
-        v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
-      return [f(5) * 255, f(3) * 255, f(1) * 255];
-    }
+  <script type="text/python">
+from browser import document
+import turtle, colorsys, math
 
-    // --- Animación ---
-    let i = 0;   // índice de "pétalos" grandes
-    let j = 0;   // índice de círculos interiores
-    let phase = "flower"; // primero la flor, luego la espiral
-    let seedIndex = 0;
+# Usar el canvas de la página
+turtle.set_defaults(canvas=document["mycanvas"])
 
-    function draw() {
-      if (phase === "flower") {
-        ctx.save();
-        ctx.rotate((i * Math.PI) / 8); // 16 rotaciones (como rt en turtle)
+speed(0.25)
+bgcolor("black")
+goto(0, -40)
 
-        let [r, g, b] = hsvToRgb(0.125, 1, 1);
-        ctx.strokeStyle = `rgb(${r},${g},${b})`;
+for i in range(16):
+    for j in range(18):
+        c = colorsys.hsv_to_rgb(0.125, 1, 1)
+        color(c)
+        rt(90)
+        circle(150 - j*6, 90)
+        lt(90)
+        circle(150 - j*6, 90)
+        rt(180)
+    circle(40, 24)
 
-        ctx.beginPath();
-        ctx.arc(0, 0, 150 - j * 6, 0, Math.PI / 2);
-        ctx.stroke();
+color("black")
+shape("turtle")
+fillcolor("brown")
+phi = 137.508 * (math.pi/180.0)
 
-        ctx.beginPath();
-        ctx.arc(0, 0, 150 - j * 6, Math.PI / 2, Math.PI);
-        ctx.stroke();
+for i in range(200):
+    r = 4 * math.sqrt(i)
+    theta = i * phi
+    x = r * math.cos(theta)
+    y = r * math.sin(theta)
+    penup()
+    goto(x, y)
+    setheading(i * 137.508)
+    pendown()
+    stamp()
 
-        ctx.restore();
-
-        j++;
-        if (j >= 18) {
-          j = 0;
-          i++;
-        }
-        if (i >= 16) {
-          phase = "seeds";
-        }
-      } else if (phase === "seeds") {
-        // 🌻 Espiral de semillas
-        const phi = 137.508 * Math.PI / 180;
-        ctx.fillStyle = "brown";
-
-        let r = 4 * Math.sqrt(seedIndex);
-        let theta = seedIndex * phi;
-        let x = r * Math.cos(theta);
-        let y = r * Math.sin(theta);
-
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, 2 * Math.PI);
-        ctx.fill();
-
-        seedIndex++;
-        if (seedIndex > 200) {
-          return; // detener animación
-        }
-      }
-
-      requestAnimationFrame(draw);
-    }
-
-    draw();
+done()
   </script>
 </body>
 </html>
-
